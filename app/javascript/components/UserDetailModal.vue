@@ -28,11 +28,7 @@
 export default {
   props: {
     user: {
-      type: String,
-      required: true
-    },
-    email: {
-      type: String,
+      type: Object,
       required: true
     }
   },

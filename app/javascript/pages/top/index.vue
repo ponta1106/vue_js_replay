@@ -7,8 +7,17 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
-  name: "TopIndex",
+  computed: {
+    ...mapGetters('now', ['now'])
+  },
+  methods: {
+    ...mapActions('now', ['getCurrentTime'])
+  },
+  created() {
+    this.getCurrentTime();
+  }
 }
 </script>
 

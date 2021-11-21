@@ -3,7 +3,6 @@
     <div class="d-flex flex-row">
       <div class="col-4 bg-light rounded shadow m-3 p-3">
         <div class="h4">TODO</div>
-        <p>カウント：{{ count }}</p>
         <div
           v-for="task in tasks"
           :key="task.id"
@@ -18,7 +17,6 @@
 
       <div class="col-4 bg-light rounded shadow m-3 p-3">
         <div class="h4">Users</div>
-        <p>カウント：{{ count }}</p>
         <div
           v-for="user in users"
           :key="user.id"
@@ -40,6 +38,7 @@
         v-if="isVisibleTaskDetailModal"
         :task = "taskDetail"
         @close-modal="handleCloseTaskDetailModal"
+        @show-edit-modal="handleShowTaskEditModal"
       />
     </transition>
     <transition name="fade">
@@ -56,13 +55,22 @@
         @create-task="handleCreateTask"
       />
     </transition>
+    <transition name="fade">
+      <TaskEditModal
+        v-if="isVisibleTaskEditModal"
+        :task="taskEdit"
+        @close-modal="handleCloseTaskEditModal"
+        @update-task="handleUpdateTask"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
 import UserDetailModal from 'components/UserDetailModal'
-import TaskDetailModal from 'components/TaskDetailModal'
-import TaskCreateModal from 'components/TaskCreateModal'
+import TaskDetailModal from './components/TaskDetailModal'
+import TaskCreateModal from './components/TaskCreateModal'
+import TaskEditModal from './components/TaskEditModal'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -71,18 +79,24 @@ export default {
     TaskDetailModal,
     UserDetailModal,
     TaskCreateModal,
+    TaskEditModal,
   },
   data() {
     return {
       taskDetail: {},
+      taskEdit: {},
       userDetail: {},
       isVisibleTaskDetailModal: false,
-      isVisibleUserDetailModal: false,
       isVisibleTaskCreateModal: false,
+      isVisibleTaskEditModal: false,
+      isVisibleTaskDeleteModal: false,
+      isVisibleUserDetailModal: false,
     }
   },
   computed: {
-    ... mapGetters(['tasks', 'count', 'now', 'users']),
+    ... mapGetters('tasks', ['tasks']),
+    ... mapGetters('users', ['users']),
+    ... mapGetters('now', ['now']),
   },
   created() {
     this.fetchTasks();
@@ -90,22 +104,35 @@ export default {
     this.getCurrentTime();
   },
   methods: {
-    ...mapActions([
-      'fetchTasks',
-      'fetchUsers',
-      'createTask',
-      'getCurrentTime',
-    ]),
+    ... mapActions('tasks', ['fetchTasks', 'createTask', 'deleteTask','updateTask']),
+    ... mapActions('users', ['fetchUsers']),
+    ... mapActions('now', ['getCurrentTime']),
     handleShowTaskDetailModal(task) {
       this.isVisibleTaskDetailModal = true;
       this.taskDetail = task;
     },
-    handleShowUserDetailModal(user) {
-      this.isVisibleUserDetailModal = true;
-      this.userDetail = user;
+    handleCloseTaskDetailModal() {
+      this.isVisibleTaskDetailModal = false;
+    },
+    handleShowTaskEditModal(task) {
+      this.taskEdit = Object.assign({}, task);
+      this.handleCloseTaskDetailModal();
+      this.isVisibleTaskEditModal = true;
+    },
+    handleCloseTaskEditModal() {
+      this.isVisibleTaskEditModal = false;
+      this.taskEdit = {};
+    },
+    handleShowTaskDetailModal(task) {
+      this.isVisibleTaskDetailModal = true;
+      this.taskDetail = task;
     },
     handleCloseTaskDetailModal() {
       this.isVisibleTaskDetailModal = false;
+    },
+    handleShowUserDetailModal(user) {
+      this.isVisibleUserDetailModal = true;
+      this.userDetail = user;
     },
     handleCloseUserDetailModal() {
       this.isVisibleUserDetailModal = false;
@@ -124,6 +151,22 @@ export default {
         console.log(error);
       }
     },
+    async handleDeleteTask(task) {
+      try {
+        await this.deleteTask(task);
+        this.handleCloseTaskDetailModal();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async handleUpdateTask(task) {
+      try {
+        await this.updateTask(task);
+        this.handleCloseTaskEditModal();
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 }
 </script>

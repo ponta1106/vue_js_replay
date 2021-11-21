@@ -20,7 +20,9 @@ const actions = {
     commit('decrement', number);
   },
 };
+
 export default {
+  namespaced: true,
   state,
   getters,
   mutations,

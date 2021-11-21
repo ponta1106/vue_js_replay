@@ -5,7 +5,6 @@ const state = {
 };
 const getters = {
   users: state => state.users,
-  tasks: state => state.tasks,
 };
 const mutations = {
   setUsers: (state, users) => {
@@ -23,6 +22,7 @@ const actions = {
 };
 
 export default {
+  namespaced: true,
   state,
   getters,
   mutations,
