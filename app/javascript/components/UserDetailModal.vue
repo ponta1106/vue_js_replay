@@ -1,5 +1,5 @@
 <template>
-  <div :id="'task-detail-modal-' + task.id" >
+  <div :id="'user-detail-modal-' + user.id" >
     <div
       class="modal"
       tabindex="-1"
@@ -8,12 +8,11 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">{{ task.title }}</h5>
+            <h5 class="modal-title">{{ user.name }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" @click="handleCloseModal"></button>
           </div>
           <div class="modal-body">
-            <p v-if="task.description == null">説明文なし</p>
-            <p>{{ task.description }}</p>
+            <p>{{ user.email }}</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="handleCloseModal">閉じる</button>
@@ -28,16 +27,14 @@
 <script>
 export default {
   props: {
-    task: {
-      title: {
-        type: String,
-        required: true
-      },
-      description: {
-        type: String,
-        required: true
-      }
+    user: {
+      type: String,
+      required: true
     },
+    email: {
+      type: String,
+      required: true
+    }
   },
   methods: {
     handleCloseModal() {
